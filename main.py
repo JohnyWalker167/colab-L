@@ -52,16 +52,17 @@ async def forward_message_to_new_channel(client, message):
 
             if caption:
                 new_caption = await remove_unwanted(caption)
+                cap_no_ext = await remove_extension(new_caption)
 
                 # Generate file path
                 logger.info(f"Downloading initial part of {file_id}...")
                 
                 dwnld_msg = await message.reply_text("📥 Downloading")
                 
-                file_path = await app.download_media(message, file_name=f"{caption}")
+                file_path = await app.download_media(message, file_name=f"{new_caption}")
                 print("Generating Thumbnail")
                 # Generate a thumbnail
-                movie_name, release_year = await extract_movie_info(caption)
+                movie_name, release_year = await extract_movie_info(cap_no_ext)
                 thumbnail_path = await get_movie_poster(movie_name, release_year)
                 duration = await generate_duration(file_path)
 
@@ -74,7 +75,7 @@ async def forward_message_to_new_channel(client, message):
                 upld_msg = await dwnld_msg.edit_text("⏫ Uploading")
                 send_msg = await app.send_video(DB_CHANNEL_ID, 
                                                 video=file_path, 
-                                                caption=f"<code>{escape(caption)}</code>",
+                                                caption=f"<code>{escape(new_caption)}</code>",
                                                 duration=duration, 
                                                 width=480, 
                                                 height=320, 
@@ -83,7 +84,7 @@ async def forward_message_to_new_channel(client, message):
                 
                 await upld_msg.edit_text("Uploaded ✅")
 
-                file_info = f"<b>🗂️ {escape(new_caption)}\n\n💾 {humanbytes(file_size)}   🆔 <code>{send_msg.id}</code></b>"
+                file_info = f"<b>🗂️ {escape(cap_no_ext)}\n\n💾 {humanbytes(file_size)}   🆔 <code>{send_msg.id}</code></b>"
 
                 await app.send_photo(CAPTION_CHANNEL_ID, thumbnail_path, caption=file_info)
 
@@ -112,13 +113,14 @@ async def forward_message_to_new_channel(client, message):
 
             if caption:
                 new_caption = await remove_unwanted(caption)
+                cap_no_ext = await remove_extension(new_caption)
 
                 # Generate file path
                 logger.info(f"Downloading initial part of {file_id}...")
                 
                 dwnld_msg = await message.reply_text("📥 Downloading")
                 
-                file_path = await app.download_media(message, file_name=f"{caption}")
+                file_path = await app.download_media(message, file_name=f"{new_caption}")
                 print("Generating Thumbnail")
                 # Generate a thumbnail
                 rply = await message.reply_text(f"Please send a photo")
@@ -138,7 +140,7 @@ async def forward_message_to_new_channel(client, message):
                 upld_msg = await dwnld_msg.edit_text("⏫ Uploading")
                 send_msg = await app.send_video(DB_CHANNEL_ID, 
                                                 video=file_path, 
-                                                caption=f"<code>{escape(caption)}</code>",
+                                                caption=f"<code>{escape(new_caption)}</code>",
                                                 duration=duration, 
                                                 width=480, 
                                                 height=320, 
@@ -147,7 +149,7 @@ async def forward_message_to_new_channel(client, message):
                 
                 await upld_msg.edit_text("Uploaded ✅")
 
-                file_info = f"<b>🗂️ {escape(new_caption)}\n\n💾 {humanbytes(file_size)}   🆔 <code>{send_msg.id}</code></b>"
+                file_info = f"<b>🗂️ {escape(cap_no_ext)}\n\n💾 {humanbytes(file_size)}   🆔 <code>{send_msg.id}</code></b>"
 
                 await app.send_photo(CAPTION_CHANNEL_ID, thumbnail_path, caption=file_info)
 
