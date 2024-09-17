@@ -161,9 +161,22 @@ async def get_movie_poster(movie_name, release_year):
                             elif 'posters' in movie_images and movie_images['posters']:
                                 poster_path = movie_images['posters'][0]['file_path']
 
-                            poster_url = f"https://image.tmdb.org/t/p/original{poster_path}"
+                            if poster_path:
+                                poster_url = f"https://image.tmdb.org/t/p/original{poster_path}"
+                    
+                                async with session.get(poster_url) as image_response:
+                                    if image_response.status == 200:
+                                        # Define the local file path to save the poster
+                                        file_name = f"{movie_name.replace(' ', '_')}_{release_year}.jpg"
+                                        file_path = os.path.join("downloads/", file_name)
+
+                                        with open(file_path, 'wb') as f:
+                                            f.write(await image_response.read())
+
+                                        # Return the local file path after downloading
+                                        return file_path
                                    
-                            return poster_url
+                        
     except Exception as e:               
         logger.error(f"Error fetching TMDB data: {e}")
 
