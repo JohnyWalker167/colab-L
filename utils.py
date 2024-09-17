@@ -32,7 +32,7 @@ def get_readable_time(seconds: int) -> str:
     result += f" {seconds}s"
     return result
     
-async def remove_unwanted(caption):
+async def remove_extension(caption):
     try:
         # Remove .mkv and .mp4 extensions if present
         cleaned_caption = re.sub(r'\.mkv|\.mp4|\.webm', '', caption)
@@ -40,6 +40,12 @@ async def remove_unwanted(caption):
     except Exception as e:
         logger.error(e)
         return None
+
+async def remove_unwanted(input_string):
+    # Use regex to match .mkv or .mp4 and everything that follows
+    result = re.split(r'(\.mkv|\.mp4)', input_string)
+    # Join the first two parts to get the string up to the extension
+    return ''.join(result[:2])
 
 def humanbytes(size):
     # Function to format file size in a human-readable format
