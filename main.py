@@ -61,7 +61,7 @@ async def forward_message_to_new_channel(client, message):
                 
                 dwnld_msg = await message.reply_text("📥 Downloading")
                 await reset_progress()
-                file_path = await app.download_media(message, file_name=f"{new_caption}", progress=progress, progress_args(new_caption, "Download")
+                file_path = await app.download_media(message, file_name=f"{new_caption}", progress=progress, progress_args(new_caption, "Download"))
                 await finish_download(new_caption)
                 print("Generating Thumbnail")
                 # Generate a thumbnail
