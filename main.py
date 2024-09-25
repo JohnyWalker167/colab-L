@@ -8,7 +8,6 @@ from pyrogram.errors import FloodWait
 from pyrogram import Client, filters, enums
 from asyncio import get_event_loop
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
-from status import *
 
 DOWNLOAD_PATH = "downloads/"
 loop = get_event_loop()
@@ -24,19 +23,12 @@ app = Client(
       api_hash=API_HASH, 
       bot_token=BOT_TOKEN, 
       workers=1000, 
-      parse_mode=enums.ParseMode.HTML,
-      in_memory=True)
+      parse_mode=enums.ParseMode.HTML
+      )
 
-user = Client(
-                "userbot",
-                api_id=int(API_ID),
-                api_hash=API_HASH,
-                session_string=STRING_SESSION,
-                no_updates = True
-            )
 
 async def main():
-    async with app, user:
+    async with app:
         await idle()
 
 with app:
@@ -58,17 +50,17 @@ async def forward_message_to_new_channel(client, message):
 
                 # Generate file path
                 logger.info(f"Downloading initial part of {file_id}...")
-                
+
                 dwnld_msg = await message.reply_text("📥 Downloading")
-                await reset_progress(file_id)
-                file_path = await app.download_media(message,
-                                                     file_name=f"{new_caption}", 
-                                                     progress=progress, 
-                                                     progress_args=(file_id, "Download")
-                                                    )
-                await finish_task(file_id)
+
+                start_time = time.time()  # Start time for download
+                file_path = await app.download_media(message, file_name=f"{new_caption}")
+
+                download_duration = time.time() - start_time
+                download_speed = file_size / download_duration if download_duration > 0 else 0
+                logger.info(f"Download completed in {download_duration:.2f}s with speed: {humanbytes(download_speed)}")
+
                 print("Generating Thumbnail")
-                # Generate a thumbnail
                 movie_name, release_year = await extract_movie_info(cap_no_ext)
                 thumbnail_path = await get_movie_poster(movie_name, release_year)
                 duration = await generate_duration(file_path)
@@ -76,29 +68,32 @@ async def forward_message_to_new_channel(client, message):
                 if thumbnail_path:
                     print(f"Thumbnail generated: {thumbnail_path}")
                 else:
-                    print("Failed to generate thumbnail")   
-
+                    print("Failed to generate thumbnail")
 
                 upld_msg = await dwnld_msg.edit_text("⏫ Uploading")
-                await reset_progress(file_id) 
-                send_msg = await app.send_video(DB_CHANNEL_ID, 
-                                                video=file_path, 
-                                                caption=f"<code>{escape(new_caption)}</code>",
-                                                duration=duration, 
-                                                width=480, 
-                                                height=320, 
-                                                thumb=thumbnail_path,
-                                                progress=progress, progress_args=(file_id, "Upload")
-                                               )
-                await finish_task(file_id)
                 
+                start_time = time.time()  # Start time for upload
+                send_msg = await app.send_video(
+                    DB_CHANNEL_ID,
+                    video=file_path,
+                    caption=f"<code>{escape(new_caption)}</code>",
+                    duration=duration,
+                    width=480,
+                    height=320,
+                    thumb=thumbnail_path
+                )
+
+                upload_duration = time.time() - start_time
+                upload_speed = file_size / upload_duration if upload_duration > 0 else 0
+                logger.info(f"Upload completed in {upload_duration:.2f}s with speed: {humanbytes(upload_speed)}")
+
                 await upld_msg.edit_text("Uploaded ✅")
 
                 file_info = f"🗂️ <b>{escape(cap_no_ext)}</b>\n\n💾 <b>{humanbytes(file_size)}</b>"
                 file_link  = f"https://thetgflix.sshemw.workers.dev/bot1/{send_msg.id}"
 
                 keyboard = InlineKeyboardMarkup([[InlineKeyboardButton("📥 Get File", url=file_link)]])
-
+                
                 await app.send_photo(CAPTION_CHANNEL_ID, thumbnail_path, caption=file_info, reply_markup=keyboard)
 
                 os.remove(thumbnail_path)
@@ -133,9 +128,7 @@ async def forward_message_to_new_channel(client, message):
                 
                 dwnld_msg = await message.reply_text("📥 Downloading")
                 
-                await reset_progress()
-                file_path = await app.download_media(message, file_name=f"{new_caption}", progress=progress)
-                await finish_download()
+                file_path = await app.download_media(message, file_name=f"{new_caption}")
                 print("Generating Thumbnail")
                 # Generate a thumbnail
                 rply = await message.reply_text(f"Please send a photo")
@@ -203,4 +196,6 @@ async def log_command(client, message):
     
       
 if __name__ == "__main__":
+    logger.info("Bot is starting...")
     loop.run_until_complete(main())
+    logger.info("Bot has stopped.")
