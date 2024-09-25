@@ -59,7 +59,7 @@ async def finish_download():
         print("\nDownload completed! Unable to calculate average speed.")
 
 # Reset variables when starting a new download
-def reset_progress():
+async def reset_progress():
     global start_time, previous_time, previous_bytes
     start_time = None
     previous_time = None
