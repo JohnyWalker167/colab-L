@@ -62,7 +62,7 @@ async def forward_message_to_new_channel(client, message):
                 dwnld_msg = await message.reply_text("📥 Downloading")
                 await reset_progress()
                 file_path = await app.download_media(message, file_name=f"{new_caption}", progress=progress, progress_args(new_caption, "Download")
-                await finish_download()
+                await finish_download(new_caption)
                 print("Generating Thumbnail")
                 # Generate a thumbnail
                 movie_name, release_year = await extract_movie_info(cap_no_ext)
@@ -86,7 +86,7 @@ async def forward_message_to_new_channel(client, message):
                                                 thumb=thumbnail_path,
                                                 progress=progress, progress_args(new_caption, "Upload")
                                                )
-                await finish_upload()
+                await finish_upload(new_caption)
                 
                 await upld_msg.edit_text("Uploaded ✅")
 
