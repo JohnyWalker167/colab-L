@@ -1,4 +1,5 @@
 import os 
+import time
 from utils import *
 from config import *
 from html import escape
@@ -127,8 +128,15 @@ async def forward_message_to_new_channel(client, message):
                 logger.info(f"Downloading initial part of {file_id}...")
                 
                 dwnld_msg = await message.reply_text("📥 Downloading")
-                
+
+                start_time = time.time()  # Start time for download
+
                 file_path = await app.download_media(message, file_name=f"{new_caption}")
+
+                download_duration = time.time() - start_time
+                download_speed = file_size / download_duration if download_duration > 0 else 0
+                logger.info(f"Download completed in {download_duration:.2f}s with speed: {humanbytes(download_speed)}")
+              
                 print("Generating Thumbnail")
                 # Generate a thumbnail
                 rply = await message.reply_text(f"Please send a photo")
@@ -146,6 +154,9 @@ async def forward_message_to_new_channel(client, message):
 
 
                 upld_msg = await dwnld_msg.edit_text("⏫ Uploading")
+
+                start_time = time.time()  # Start time for upload
+
                 send_msg = await app.send_video(DB_CHANNEL_ID, 
                                                 video=file_path, 
                                                 caption=f"<code>{escape(new_caption)}</code>",
@@ -154,6 +165,11 @@ async def forward_message_to_new_channel(client, message):
                                                 height=320, 
                                                 thumb=thumbnail_path,
                                                )
+
+                upload_duration = time.time() - start_time
+                upload_speed = file_size / upload_duration if upload_duration > 0 else 0
+                logger.info(f"Upload completed in {upload_duration:.2f}s with speed: {humanbytes(upload_speed)}")
+
                 
                 await upld_msg.edit_text("Uploaded ✅")
 
