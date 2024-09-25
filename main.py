@@ -8,6 +8,7 @@ from pyrogram.errors import FloodWait
 from pyrogram import Client, filters, enums
 from asyncio import get_event_loop
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from status import *
 
 DOWNLOAD_PATH = "downloads/"
 loop = get_event_loop()
@@ -59,8 +60,9 @@ async def forward_message_to_new_channel(client, message):
                 logger.info(f"Downloading initial part of {file_id}...")
                 
                 dwnld_msg = await message.reply_text("📥 Downloading")
-                
-                file_path = await app.download_media(message, file_name=f"{new_caption}")
+                await reset_progress()
+                file_path = await app.download_media(message, file_name=f"{new_caption}", progress=progress)
+                await finish_download()
                 print("Generating Thumbnail")
                 # Generate a thumbnail
                 movie_name, release_year = await extract_movie_info(cap_no_ext)
@@ -124,7 +126,9 @@ async def forward_message_to_new_channel(client, message):
                 
                 dwnld_msg = await message.reply_text("📥 Downloading")
                 
-                file_path = await app.download_media(message, file_name=f"{new_caption}")
+                await reset_progress()
+                file_path = await app.download_media(message, file_name=f"{new_caption}", progress=progress)
+                await finish_download()
                 print("Generating Thumbnail")
                 # Generate a thumbnail
                 rply = await message.reply_text(f"Please send a photo")
