@@ -7,7 +7,7 @@ previous_time = None
 previous_bytes = 0
 total_bytes = 0
 
-async def progress(current, total):
+async def progress(current, total, file_name, task):
     global start_time, previous_time, previous_bytes, total_bytes
 
     # Initialize timers and bytes on the first call
