@@ -15,7 +15,6 @@ loop = get_event_loop()
 
 os.makedirs(DOWNLOAD_PATH, exist_ok=True)
 
-progress_data = {}
 user_data = {}
 TOKEN_TIMEOUT = 7200
 
@@ -61,13 +60,13 @@ async def forward_message_to_new_channel(client, message):
                 logger.info(f"Downloading initial part of {file_id}...")
                 
                 dwnld_msg = await message.reply_text("📥 Downloading")
-                await reset_progress()
+                await reset_progress(file_id)
                 file_path = await app.download_media(message,
                                                      file_name=f"{new_caption}", 
                                                      progress=progress, 
                                                      progress_args=(file_id, "Download")
                                                     )
-                await finish_download(new_caption)
+                await finish_task(file_id)
                 print("Generating Thumbnail")
                 # Generate a thumbnail
                 movie_name, release_year = await extract_movie_info(cap_no_ext)
@@ -81,7 +80,7 @@ async def forward_message_to_new_channel(client, message):
 
 
                 upld_msg = await dwnld_msg.edit_text("⏫ Uploading")
-                await reset_progress() 
+                await reset_progress(file_id) 
                 send_msg = await app.send_video(DB_CHANNEL_ID, 
                                                 video=file_path, 
                                                 caption=f"<code>{escape(new_caption)}</code>",
@@ -91,7 +90,7 @@ async def forward_message_to_new_channel(client, message):
                                                 thumb=thumbnail_path,
                                                 progress=progress, progress_args=(file_id, "Upload")
                                                )
-                await finish_upload(new_caption)
+                await finish_task(file_id)
                 
                 await upld_msg.edit_text("Uploaded ✅")
 
