@@ -15,6 +15,7 @@ loop = get_event_loop()
 
 os.makedirs(DOWNLOAD_PATH, exist_ok=True)
 
+progress_data = {}
 user_data = {}
 TOKEN_TIMEOUT = 7200
 
@@ -61,7 +62,11 @@ async def forward_message_to_new_channel(client, message):
                 
                 dwnld_msg = await message.reply_text("📥 Downloading")
                 await reset_progress()
-                file_path = await app.download_media(message, file_name=f"{new_caption}", progress=progress, progress_args=(new_caption, "Download"))
+                file_path = await app.download_media(message,
+                                                     file_name=f"{new_caption}", 
+                                                     progress=progress, 
+                                                     progress_args=(file_id, "Download")
+                                                    )
                 await finish_download(new_caption)
                 print("Generating Thumbnail")
                 # Generate a thumbnail
@@ -84,7 +89,7 @@ async def forward_message_to_new_channel(client, message):
                                                 width=480, 
                                                 height=320, 
                                                 thumb=thumbnail_path,
-                                                progress=progress, progress_args=(new_caption, "Upload")
+                                                progress=progress, progress_args=(file_id, "Upload")
                                                )
                 await finish_upload(new_caption)
                 
