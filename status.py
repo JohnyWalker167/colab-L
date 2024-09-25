@@ -37,7 +37,7 @@ async def progress(current, total, file_name, task):
         speed_mbps = speed / (1024 * 1024)  # Convert to MB/s
 
         # Update progress in the same line
-        sys.stdout.write(f"\rProgress: {percentage:.1f}% | Speed: {speed_mbps:.2f} MB/s")
+        sys.stdout.write(f"\rProgress: {percentage:.1f}% {file_name}| {task} Speed: {speed_mbps:.2f} MB/s")
     else:
         # Update percentage only initially
         sys.stdout.write(f"\rProgress: {percentage:.1f}%")
@@ -57,6 +57,17 @@ async def finish_download():
         print(f"\nDownload completed! Average Speed: {average_speed_mbps:.2f} MB/s")
     else:
         print("\nDownload completed! Unable to calculate average speed.")
+
+async def finish_upload():
+    global start_time, total_bytes
+
+    # Calculate average speed after the download is complete
+    elapsed_time = time.time() - start_time  # Total elapsed time
+    if elapsed_time > 0:
+        average_speed_mbps = total_bytes / elapsed_time / (1024 * 1024)  # Convert to MB/s
+        print(f"\nUpload completed! Average Speed: {average_speed_mbps:.2f} MB/s")
+    else:
+        print("\nUpload completed! Unable to calculate average speed.")
 
 # Reset variables when starting a new download
 async def reset_progress():
