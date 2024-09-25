@@ -76,6 +76,7 @@ async def forward_message_to_new_channel(client, message):
 
 
                 upld_msg = await dwnld_msg.edit_text("⏫ Uploading")
+                await reset_progress() 
                 send_msg = await app.send_video(DB_CHANNEL_ID, 
                                                 video=file_path, 
                                                 caption=f"<code>{escape(new_caption)}</code>",
@@ -85,6 +86,7 @@ async def forward_message_to_new_channel(client, message):
                                                 thumb=thumbnail_path,
                                                 progress=progress, progress_args(new_caption, "Upload")
                                                )
+                await finish_upload()
                 
                 await upld_msg.edit_text("Uploaded ✅")
 
