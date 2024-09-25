@@ -47,7 +47,6 @@ API_HASH = os.getenv('API_HASH')
 BOT_TOKEN = os.getenv('BOT_TOKEN')
 OWNER_USERNAME = os.getenv('OWNER_USERNAME')
 OWNER_ID = int(os.getenv('OWNER_ID'))
-STRING_SESSION = os.getenv('STRING_SESSION')
 
 TMDB_API_KEY = os.getenv('TMDB_API_KEY')
 
