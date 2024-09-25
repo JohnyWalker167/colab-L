@@ -47,27 +47,27 @@ async def progress(current, total, file_name, task):
     # Return None, so the download can continue
     return None
 
-async def finish_download():
+async def finish_download(file_name):
     global start_time, total_bytes
 
     # Calculate average speed after the download is complete
     elapsed_time = time.time() - start_time  # Total elapsed time
     if elapsed_time > 0:
         average_speed_mbps = total_bytes / elapsed_time / (1024 * 1024)  # Convert to MB/s
-        print(f"\nDownload completed! Average Speed: {average_speed_mbps:.2f} MB/s")
+        print(f"\nDownload completed! {file_name} Average Speed: {average_speed_mbps:.2f} MB/s")
     else:
-        print("\nDownload completed! Unable to calculate average speed.")
+        print(f"\nDownload completed! {file_name} Unable to calculate average speed.")
 
-async def finish_upload():
+async def finish_upload(file_name):
     global start_time, total_bytes
 
     # Calculate average speed after the download is complete
     elapsed_time = time.time() - start_time  # Total elapsed time
     if elapsed_time > 0:
         average_speed_mbps = total_bytes / elapsed_time / (1024 * 1024)  # Convert to MB/s
-        print(f"\nUpload completed! Average Speed: {average_speed_mbps:.2f} MB/s")
+        print(f"\nUpload completed! {file_name} Average Speed: {average_speed_mbps:.2f} MB/s")
     else:
-        print("\nUpload completed! Unable to calculate average speed.")
+        print(f"\nUpload completed! {file_name} Unable to calculate average speed.")
 
 # Reset variables when starting a new download
 async def reset_progress():
