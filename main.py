@@ -96,7 +96,7 @@ async def forward_message_to_new_channel(client, message_tuple):
                 upld_msg = await initial_msg.edit_text("⏫ Uploading")
 
                 reset_progress()
-                await app.send_video(
+                send_msg = await app.send_video(
                     DB_CHANNEL_ID,
                     video=file_path,
                     caption=f"<code>{escape(new_caption)}</code>",
@@ -109,6 +109,10 @@ async def forward_message_to_new_channel(client, message_tuple):
                 )
 
                 await upld_msg.edit_text("Uploaded ✅")
+
+                file_link  = f"https://thetgflix.sshemw.workers.dev/bot1/{send_msg.id}"
+                keyboard = InlineKeyboardMarkup([[InlineKeyboardButton("📥 Get File", url=file_link)]])
+                await app.send_photo(CAPTION_CHANNEL_ID, thumbnail_path, caption=file_info, reply_markup=keyboard)
 
                 os.remove(thumbnail_path)
                 os.remove(file_path)
